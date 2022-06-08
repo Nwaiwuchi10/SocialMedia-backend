@@ -40,6 +40,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    Verified: {
+      type: String,
+      default: "",
+    },
     desc: {
       type: String,
       max: 50,

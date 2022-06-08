@@ -3,6 +3,16 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const { getUserProfile } = require("../controllers/userController");
 
+//// get all users
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 //update user
 router.put("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.body.isAdmin) {
@@ -42,7 +52,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 //get a user
-router.get("/", async (req, res) => {
+router.get("/:id", async (req, res) => {
   const userId = req.query.userId;
   const username = req.query.username;
   try {
