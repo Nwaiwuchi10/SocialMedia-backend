@@ -47,14 +47,22 @@ const UserSchema = new mongoose.Schema(
     desc: {
       type: String,
       max: 50,
+      default: "",
+    },
+    phoneNumber: {
+      type: String,
+      max: 50,
+      default: "",
     },
     city: {
       type: String,
       max: 50,
+      default: "",
     },
-    from: {
+    country: {
       type: String,
       max: 50,
+      default: "",
     },
     relationship: {
       type: Number,

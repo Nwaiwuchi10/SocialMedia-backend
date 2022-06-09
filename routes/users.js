@@ -1,7 +1,11 @@
 const User = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
-const { getUserProfile } = require("../controllers/userController");
+const {
+  getUserProfile,
+  updateUserProfile,
+  getUserById,
+} = require("../controllers/userController");
 
 //// get all users
 router.get("/", async (req, res) => {
@@ -37,6 +41,12 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+/////update user
+router.route("/profiler/:id").put(updateUserProfile);
+
+////find user by id
+router.route("/:id").get(getUserById);
+
 //delete user
 router.delete("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.body.isAdmin) {
@@ -67,7 +77,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //// get User Profile
-router.route("/profiler").get(getUserProfile);
+router.route("/profiler/id").get(getUserProfile);
 
 //get friends
 router.get("/friends/:userId", async (req, res) => {
