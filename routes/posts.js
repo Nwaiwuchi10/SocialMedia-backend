@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { getPostByLatest } = require("../controllers/postController");
 const Post = require("../models/Post");
 const User = require("../models/User");
 
@@ -43,8 +44,8 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//like / dislike a post
-
+// like / dislike a post
+///excellent working
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -106,6 +107,33 @@ router.get("/", async (req, res) => {
     res.json(posts);
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+///latest post
+
+/////get latest post
+router.route("/latest/:id").get(getPostByLatest);
+
+////@ROUTE PUT/api/posts/like/:id
+///Like a post
+router.put("/like/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    /// Check if the post has already been liked
+    if (
+      post.likes.filter((like) => like.user.toString() === req.user.id).length >
+      0
+    ) {
+      return res.json(400).json({ msg: "Post already liked" });
+    }
+    post.likes.unshift({ user: req.user.id });
+
+    await post.save();
+
+    res.json(post.likes);
+  } catch (error) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
   }
 });
 

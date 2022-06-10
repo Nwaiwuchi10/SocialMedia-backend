@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const generateToken = require("../Utils/generateToken");
 
 //REGISTER
 router.post("/register", async (req, res) => {
@@ -18,7 +19,20 @@ router.post("/register", async (req, res) => {
 
     //save user and respond
     const user = await newUser.save();
-    res.status(200).json(user);
+    res.status(200).json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      roles: user.roles,
+      phoneNumber: user.phoneNumber,
+      isAdmin: user.isAdmin,
+      city: user.city,
+      phoneNumber: user.phoneNumber,
+      country: user.country,
+      desc: user.desc,
+      Verified: user.Verified,
+      token: generateToken(user._id),
+    });
   } catch (err) {
     res.status(500).json(err);
   }

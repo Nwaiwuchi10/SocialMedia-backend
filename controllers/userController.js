@@ -34,16 +34,24 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
     user.profilePicture = req.body.profilePicture || user.profilePicture;
+    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+    user.desc = req.body.desc || user.desc;
+    user.city = req.body.city || user.city;
+    user.country = req.body.country || user.country;
     if (req.body.password) {
       user.password = req.body.password;
     }
     const updatedUser = await user.save();
     res.json({
       id: updatedUser.id,
-      name: updatedUser.name,
+      username: updatedUser.username,
       email: updatedUser.email,
       profilePicture: updatedUser.profilePicture,
       isAdmin: updatedUser.isAdmin,
+      phoneNumber: updatedUser.phoneNumber,
+      desc: updatedUser.desc,
+      city: updatedUser.city,
+      country: updatedUser.country,
     });
   } else {
     res.status(404);
