@@ -10,11 +10,18 @@ const PostSchema = new mongoose.Schema(
       type: String,
       max: 500,
     },
+    singleFile: {
+      type: Array,
+      default: [],
+      max: 10,
+    },
     image: {
       type: Array,
       default: [],
       max: 10,
     },
+    video: [{ type: String }],
+
     likes: {
       type: Array,
       default: [],
@@ -24,7 +31,15 @@ const PostSchema = new mongoose.Schema(
       default: [],
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      virtual: true,
+    },
+    toObject: {
+      virtual: true,
+    },
+  }
 );
 
 module.exports = mongoose.model("Post", PostSchema);

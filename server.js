@@ -6,21 +6,24 @@ const colors = require("colors");
 const http = require("http");
 const helmet = require("helmet");
 const morgan = require("morgan");
+
 const multer = require("multer");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
+const fileRoutes = require("./routes/file-upload-routes");
+const mediaRoutes = require("./routes/media");
 
 const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
 const router = express.Router();
-// const cors = require("cors");
+const cors = require("cors");
 const path = require("path");
 const config = require("config");
 
 ////init app
 const app = express();
-// app.use(cors());
+app.use(cors());
 // const dotenv = require("dotenv");
 
 // dotenv.config();
@@ -64,29 +67,29 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../public_html/uploads", "uploads"),
-  filename: function (req, file, cb) {
-    //null as first argument means no error
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: path.join(__dirname, "../public_html/uploads", "uploads"),
+//   filename: function (req, file, cb) {
+//     //null as first argument means no error
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
 
-app.post("/api/imageupload", async (req, res) => {
-  try {
-    let upload = multer({ storage: storage }).single("avatar");
-    ////avatar is the name of our file input field in html form
-    upload(req, res, function (err) {
-      if (!req.file) {
-        return res.send("Please select an image to upload");
-      } else if (err instanceof multer.MulterError) {
-        return res.send(err);
-      }
-    });
-  } catch (error) {
-    console.log(err);
-  }
-});
+// app.post("/api/imageupload", async (req, res) => {
+//   try {
+//     let upload = multer({ storage: storage }).single("avatar");
+//     ////avatar is the name of our file input field in html form
+//     upload(req, res, function (err) {
+//       if (!req.file) {
+//         return res.send("Please select an image to upload");
+//       } else if (err instanceof multer.MulterError) {
+//         return res.send(err);
+//       }
+//     });
+//   } catch (error) {
+//     console.log(err);
+//   }
+// });
 
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -109,8 +112,13 @@ app.post("/api/imageupload", async (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
+
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
+app.use("/api/vl/media", mediaRoutes);
+app.use("/public", express.static(path.join(__dirname, "public")));
+
+app.use("/api", fileRoutes.routes);
 
 // const __dirname = path.resolve();
 

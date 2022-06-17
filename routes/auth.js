@@ -37,6 +37,12 @@ router.post("/register", async (req, res) => {
     res.status(500).json(err);
   }
 });
+/////
+//  user: {
+//   type: mongoose.Schema.Types.ObjectId,
+//   required: true,
+//   ref: "User",
+// },
 
 //LOGIN
 router.post("/login", async (req, res) => {
