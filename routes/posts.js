@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const multer = require("multer");
 const {
   getPostByLatest,
   getPostByCartegory,
@@ -6,23 +7,64 @@ const {
 const Post = require("../models/Post");
 const User = require("../models/User");
 
-/////
+/////multer storage
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "./public/uploads");
+  },
+  filename: (req, file, callback) => {
+    callback(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 //create a post
 
-router.post(
-  "/",
+// router.post(
+//   "/",
+//   upload.single("image"),
 
-  async (req, res) => {
-    const newPost = new Post(req.body);
-    try {
-      const savedPost = await newPost.save();
-      res.status(200).json(savedPost);
-    } catch (err) {
-      res.status(500).json(err);
-    }
+//   async (req, res) => {
+//     const newPost = new Post({
+//       desc: req.body.desc,
+//       image: req.file.image,
+//       userId: req.body.userId,
+//     });
+//     try {
+//       const savedPost = await newPost.save();
+//       res.status(200).json(savedPost);
+//     } catch (err) {
+//       res.status(500).json(err);
+//     }
+//   }
+// );
+
+/////create new post
+router.post("/", upload.single("image"), async (req, res) => {
+  try {
+    //create new user
+    const newPost = new Post({
+      desc: req.body.desc,
+      image: req.file.originalname,
+      userId: req.body.userId,
+    });
+
+    //save post and respond
+    const post = await newPost.save();
+    res.status(200).send("File Uploaded Successfully");
+    // res.status(200).json({
+    //   _id: post._id,
+    //   desc: post.desc,
+    //   // image: post.image,
+    //   userId: post.userId,
+    // });
+  } catch (err) {
+    res.status(500).json(err);
   }
-);
+});
+
 //update a post
 
 router.put("/:id", async (req, res) => {
@@ -92,11 +134,36 @@ router.put("/:id/favourite", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+////to comment a post
+// like / dislike a post
+///excellent working
+router.put("/comment/:id", async (req, res) => {
+  try {
+    const comment = {
+      text: req.body.text,
+      userId: req.body.userId,
+    };
+
+    const post = await Post.findById(req.params.id);
+    if (!post.comments.includes(req.body.userId)) {
+      await post.updateOne({ $push: { comments: comment } });
+      res.status(200).json("The post has been commented");
+
+      res.status(200).json(savedcomments);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 //get a post
 
 router.get("/:id", async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id).populate("userId", [
+      "username",
+      "profilePicture",
+    ]);
     res.status(200).json(post);
   } catch (err) {
     res.status(500).json(err);
@@ -138,16 +205,30 @@ router.get("/profile/:username", async (req, res) => {
 //   "name",
 //   "profilePicture",
 // ]);
+// router.get("/", async (req, res) => {
+//   try {
+//     const posts = await Post.find({}).populate("userId", [
+//       "username, profilePicture",
+//     ]);
+//     res.json(posts);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+////to get post by latest
 router.get("/", async (req, res) => {
   try {
-    const posts = await Post.find({}).populate("userId", [
-      "username, profilePicture",
-    ]);
+    const posts = await Post.find({})
+      .populate("userId", ["username", "profilePicture"])
+      .sort({ createdAt: -1 });
+
     res.json(posts);
   } catch (err) {
     res.status(500).json(err);
   }
 });
+
 ///latest post
 
 /////get latest post

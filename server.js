@@ -83,7 +83,7 @@ app.use(morgan("common"));
 //       if (!req.file) {
 //         return res.send("Please select an image to upload");
 //       } else if (err instanceof multer.MulterError) {
-//         return res.send(err);
+//         return res.send(err );
 //       }
 //     });
 //   } catch (error) {

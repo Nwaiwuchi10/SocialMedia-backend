@@ -16,16 +16,28 @@ const PostSchema = new mongoose.Schema(
       max: 10,
     },
     image: {
+      type: String,
+      default: "",
+      // default: [],
+      // max: 10,
+    },
+    videos: {
       type: Array,
       default: [],
-      max: 10,
     },
-    video: [{ type: String }],
 
     likes: {
       type: Array,
       default: [],
     },
+    comments: [
+      {
+        text: String,
+        userId: {
+          type: String,
+        },
+      },
+    ],
     favourites: {
       type: Array,
       default: [],
