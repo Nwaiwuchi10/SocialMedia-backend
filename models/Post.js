@@ -10,16 +10,12 @@ const PostSchema = new mongoose.Schema(
       type: String,
       max: 500,
     },
-    singleFile: {
+
+    image: {
       type: Array,
+
       default: [],
       max: 10,
-    },
-    image: {
-      type: String,
-      default: "",
-      // default: [],
-      // max: 10,
     },
     videos: {
       type: Array,

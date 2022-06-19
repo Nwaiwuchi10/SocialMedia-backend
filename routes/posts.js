@@ -146,8 +146,13 @@ router.put("/comment/:id", async (req, res) => {
     };
 
     const post = await Post.findById(req.params.id);
+
     if (!post.comments.includes(req.body.userId)) {
-      await post.updateOne({ $push: { comments: comment } });
+      await post
+        .updateOne({ $push: { comments: comment } })
+        .sort({ createdAt: -1 })
+        .limit(-1);
+
       res.status(200).json("The post has been commented");
 
       res.status(200).json(savedcomments);
@@ -189,10 +194,10 @@ router.get("/timeline/:userId", async (req, res) => {
 
 //get user's all posts
 
-router.get("/profile/:username", async (req, res) => {
+router.get("/profile/:id", async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
-    const posts = await Post.find({ userId: user._id });
+    const user = await User.findOne({ userId: req.params._id });
+    const posts = await Post.find({ userId: user._id }).sort({ createdAt: -1 });
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json(err);
