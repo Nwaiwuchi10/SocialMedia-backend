@@ -99,7 +99,7 @@ router.get("/friends/:userId", async (req, res) => {
   }
 });
 
-//follow a user
+///follow a user
 
 router.put("/:id/follow", async (req, res) => {
   if (req.body.userId !== req.params.id) {

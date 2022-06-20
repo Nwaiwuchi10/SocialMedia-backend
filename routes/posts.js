@@ -20,27 +20,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-//create a post
-
-// router.post(
-//   "/",
-//   upload.single("image"),
-
-//   async (req, res) => {
-//     const newPost = new Post({
-//       desc: req.body.desc,
-//       image: req.file.image,
-//       userId: req.body.userId,
-//     });
-//     try {
-//       const savedPost = await newPost.save();
-//       res.status(200).json(savedPost);
-//     } catch (err) {
-//       res.status(500).json(err);
-//     }
-//   }
-// );
-
 /////create new post
 router.post("/", upload.single("image"), async (req, res) => {
   try {
@@ -148,10 +127,7 @@ router.put("/comment/:id", async (req, res) => {
     const post = await Post.findById(req.params.id);
 
     if (!post.comments.includes(req.body.userId)) {
-      await post
-        .updateOne({ $push: { comments: comment } })
-        .sort({ createdAt: -1 })
-        .limit(-1);
+      await post.updateOne({ $push: { comments: comment } });
 
       res.status(200).json("The post has been commented");
 
@@ -165,10 +141,7 @@ router.put("/comment/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate("userId", [
-      "username",
-      "profilePicture",
-    ]);
+    const post = await Post.findById(req.params.id).populate("userId");
     res.status(200).json(post);
   } catch (err) {
     res.status(500).json(err);
@@ -177,9 +150,9 @@ router.get("/:id", async (req, res) => {
 
 //get timeline posts
 
-router.get("/timeline/:userId", async (req, res) => {
+router.get("/timeline/all", async (req, res) => {
   try {
-    const currentUser = await User.findById(req.params.userId);
+    const currentUser = await User.findById(req.body.userId);
     const userPosts = await Post.find({ userId: currentUser._id });
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
@@ -225,8 +198,8 @@ router.get("/profile/:id", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const posts = await Post.find({})
-      .populate("userId", ["username", "profilePicture"])
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate("userId", "_id username");
 
     res.json(posts);
   } catch (err) {
