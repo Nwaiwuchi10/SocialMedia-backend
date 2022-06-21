@@ -177,23 +177,6 @@ router.get("/profile/:id", async (req, res) => {
   }
 });
 
-//// get all post
-
-// .populate("user", [
-//   "name",
-//   "profilePicture",
-// ]);
-// router.get("/", async (req, res) => {
-//   try {
-//     const posts = await Post.find({}).populate("userId", [
-//       "username, profilePicture",
-//     ]);
-//     res.json(posts);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
-
 ////to get post by latest
 router.get("/", async (req, res) => {
   try {
