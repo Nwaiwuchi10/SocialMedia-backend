@@ -26,19 +26,20 @@ router.post("/", upload.single("image"), async (req, res) => {
     //create new user
     const newPost = new Post({
       desc: req.body.desc,
-      image: req.file.originalname,
+      image: req.body.image,
+      // image: req.file.originalname,
       userId: req.body.userId,
     });
 
     //save post and respond
     const post = await newPost.save();
     res.status(200).send("File Uploaded Successfully");
-    // res.status(200).json({
-    //   _id: post._id,
-    //   desc: post.desc,
-    //   // image: post.image,
-    //   userId: post.userId,
-    // });
+    res.status(200).json({
+      _id: post._id,
+      desc: post.desc,
+      image: post.image,
+      userId: post.userId,
+    });
   } catch (err) {
     res.status(500).json(err);
   }
