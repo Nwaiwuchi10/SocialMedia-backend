@@ -28,7 +28,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       desc: req.body.desc,
       image: req.body.image,
       // image: req.file.originalname,
-      userId: req.body.userId,
+      user: req.body.user,
     });
 
     //save post and respond
@@ -38,7 +38,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       _id: post._id,
       desc: post.desc,
       image: post.image,
-      userId: post.userId,
+      user: post.user,
     });
   } catch (err) {
     res.status(500).json(err);
@@ -50,7 +50,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
+    if (post.user === req.body.user) {
       await post.updateOne({ $set: req.body });
       res.status(200).json("the post has been updated");
     } else {
@@ -66,7 +66,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
+    if (post.user === req.body.user) {
       await post.deleteOne();
       res.status(200).json("the post has been deleted");
     } else {
@@ -81,13 +81,13 @@ router.delete("/:id", async (req, res) => {
 router.put("/like/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post.likes.includes(req.body.userId)) {
-      await post.updateOne({ $push: { likes: req.body.userId } });
+    if (!post.likes.includes(req.body.user)) {
+      await post.updateOne({ $push: { likes: req.body.user } });
       res.status(200).json("The post has been liked");
       const savedlikes = await newLikes.save();
       res.status(200).json(savedlikes);
     } else {
-      await post.updateOne({ $pull: { likes: req.body.userId } });
+      await post.updateOne({ $pull: { likes: req.body.user } });
       res.status(200).json("The post has been disliked");
     }
   } catch (err) {
@@ -103,11 +103,11 @@ router.put("/like/:id", async (req, res) => {
 router.put("/:id/favourite", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post.favourites.includes(req.body.userId)) {
-      await post.updateOne({ $push: { favourites: req.body.userId } });
+    if (!post.favourites.includes(req.body.user)) {
+      await post.updateOne({ $push: { favourites: req.body.user } });
       res.status(200).json("The post has been favourite");
     } else {
-      await post.updateOne({ $pull: { favourites: req.body.userId } });
+      await post.updateOne({ $pull: { favourites: req.body.user } });
       res.status(200).json("The post has been unfavourite");
     }
   } catch (err) {
@@ -122,12 +122,12 @@ router.put("/comment/:id", async (req, res) => {
   try {
     const comment = {
       text: req.body.text,
-      userId: req.body.userId,
+      user: req.body.user,
     };
 
     const post = await Post.findById(req.params.id);
 
-    if (!post.comments.includes(req.body.userId)) {
+    if (!post.comments.includes(req.body.user)) {
       await post.updateOne({ $push: { comments: comment } });
 
       res.status(200).json("The post has been commented");
@@ -142,7 +142,7 @@ router.put("/comment/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate("userId");
+    const post = await Post.findById(req.params.id).populate("user");
     res.status(200).json(post);
   } catch (err) {
     res.status(500).json(err);
@@ -153,8 +153,8 @@ router.get("/:id", async (req, res) => {
 
 router.get("/timeline/all", async (req, res) => {
   try {
-    const currentUser = await User.findById(req.body.userId);
-    const userPosts = await Post.find({ userId: currentUser._id });
+    const currentUser = await User.findById(req.body.user);
+    const userPosts = await Post.find({ user: currentUser._id });
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
         return Post.find({ userId: friendId });
@@ -170,8 +170,8 @@ router.get("/timeline/all", async (req, res) => {
 
 router.get("/profile/:id", async (req, res) => {
   try {
-    const user = await User.findOne({ userId: req.params._id });
-    const posts = await Post.find({ userId: user._id }).sort({ createdAt: -1 });
+    const user = await User.findOne({ user: req.params._id });
+    const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 });
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json(err);
@@ -183,21 +183,13 @@ router.get("/", async (req, res) => {
   try {
     const posts = await Post.find({})
       .sort({ createdAt: -1 })
-      .populate("userId", "_id username");
+      .populate("user", ["profilePicture", "username", "Verified", "isAdmin"]);
 
     res.json(posts);
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
-///latest post
-
-/////get latest post
-router.route("/desc/desc").get(getPostByLatest);
-
-/////get latest post
-router.route("/latest/:id").get(getPostByCartegory);
 
 ////@ROUTE PUT/api/posts/like/:id
 ///Like a post
