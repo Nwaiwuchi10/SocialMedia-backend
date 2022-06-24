@@ -108,7 +108,7 @@ router.put("/:id/favourite", async (req, res) => {
       res.status(200).json("The post has been favourite");
     } else {
       await post.updateOne({ $pull: { favourites: req.body.user } });
-      res.status(200).json("The post has been unfavourite");
+      res.status(200).json("The post has been unfavourited");
     }
   } catch (err) {
     res.status(500).json(err);
@@ -191,7 +191,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-////@ROUTE PUT/api/posts/like/:id
+////@ROUTE PUT/api/posts/like/:id ["profilePicture", "username", "Verified", "isAdmin"]
 ///Like a post
 router.put("/like/:id", async (req, res) => {
   try {

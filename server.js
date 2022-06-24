@@ -11,6 +11,7 @@ const multer = require("multer");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
+const uploadRoutes = require("./routes/uploadRoutes");
 const fileRoutes = require("./routes/file-upload-routes");
 const mediaRoutes = require("./routes/media");
 
@@ -112,11 +113,12 @@ app.use(morgan("common"));
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
-
+app.use("/api/upload", uploadRoutes);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
 app.use("/api/vl/media", mediaRoutes);
-app.use("/public", express.static(path.join(__dirname, "public")));
+// app.use("/public", express.static(path.join(__dirname, "public")));
+app.use("./uploadsfile", express.static(path.join(__dirname, "./uploadsfile")));
 
 app.use("/api", fileRoutes.routes);
 
