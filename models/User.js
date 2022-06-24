@@ -41,8 +41,8 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
     Verified: {
-      type: String,
-      default: "",
+      type: Boolean,
+      default: false,
     },
     desc: {
       type: String,
