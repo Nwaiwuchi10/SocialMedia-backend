@@ -34,9 +34,14 @@ const PostSchema = new mongoose.Schema(
     comments: [
       {
         text: String,
-        userId: {
-          type: String,
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "User",
         },
+        // userId: {
+        //   type: String,
+        // },
       },
     ],
     favourites: {
