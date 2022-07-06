@@ -178,6 +178,17 @@ router.get("/profile/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
+//get user's all posts
+
+router.get("/profile/:username", async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    const posts = await Post.find({ user: user._id });
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 ////to get post by latest
 router.get("/", async (req, res) => {

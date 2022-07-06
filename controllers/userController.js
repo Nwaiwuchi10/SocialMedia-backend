@@ -1,6 +1,33 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 
+///////
+//@desc Fetch all products
+//@route Get/api/products
+//@acess Fetch Public
+
+const getMyUsers = asyncHandler(async (req, res) => {
+  const pageSize = 20;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const keyword = req.query.keyword
+    ? {
+        name: {
+          $regex: req.query.keyword,
+          $options: "i",
+        },
+      }
+    : {};
+
+  const count = await User.countDocuments({ ...keyword });
+
+  const users = await User.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+  res.json({ users, page, pages: Math.ceil(count / pageSize) });
+});
+///////
+
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
   if (user) {

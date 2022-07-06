@@ -7,7 +7,7 @@ const {
   getUserById,
 } = require("../controllers/userController");
 
-//// get all users
+// //// get all users
 router.get("/", async (req, res) => {
   try {
     const users = await User.find({});
@@ -16,6 +16,33 @@ router.get("/", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+//////get all users with keywoard & pagination
+// get all users
+// router.get("/", async (req, res) => {
+//   try {
+//     const pageSize = 20;
+//     const page = Number(req.query.pageNumber) || 1;
+
+//     const keyword = req.query.keyword
+//       ? {
+//           name: {
+//             $regex: req.query.keyword,
+//             $options: "i",
+//           },
+//         }
+//       : {};
+
+//     const count = await User.countDocuments({ ...keyword });
+
+//     const users = await User.find({ ...keyword })
+//       .limit(pageSize)
+//       .skip(pageSize * (page - 1));
+//     res.json({ users, page, pages: Math.ceil(count / pageSize) });
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
 
 //update user
 router.put("/:id", async (req, res) => {
