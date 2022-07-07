@@ -64,12 +64,28 @@ router.put("/:id", async (req, res) => {
 
 //delete a post
 
+// router.delete("/:id", async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (post.user === req.body.user) {
+//       await post.deleteOne();
+//       res.status(200).json("the post has been deleted");
+//     } else {
+//       res.status(403).json("you can delete only your post");
+//     }
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+/////delete a post
 router.delete("/:id", async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-    if (post.user === req.body.user) {
+    const id = req.params.id;
+    const { user } = req.body;
+    const post = await PostModel.findById(id);
+    if (post.user === user) {
       await post.deleteOne();
-      res.status(200).json("the post has been deleted");
+      res.status(200).json("Post deleted.");
     } else {
       res.status(403).json("you can delete only your post");
     }
@@ -77,6 +93,9 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+/////
+
 // like / dislike a post
 ///excellent working
 router.put("/like/:id", async (req, res) => {
