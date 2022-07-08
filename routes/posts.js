@@ -81,10 +81,10 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const { user } = req.body;
+    const { userId } = req.body;
     const post = await PostModel.findById(id);
-    if (post.user === user) {
-      await post.deleteOne();
+    if (post.userId === userId) {
+      await post.remove()();
       res.status(200).json("Post deleted.");
     } else {
       res.status(403).json("you can delete only your post");
@@ -95,6 +95,22 @@ router.delete("/:id", async (req, res) => {
 });
 
 /////
+//@desc Delete a product
+//@route DELETE/api/products/:id
+//@acess Fetch Public
+
+router.delete("/puyol/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (post) {
+      await post.remove();
+      res.json({ message: "Product removed" });
+    }
+  } catch (error) {
+    res.status(500).json(err);
+  }
+});
 
 // like / dislike a post
 ///excellent working
