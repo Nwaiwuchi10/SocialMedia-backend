@@ -164,7 +164,18 @@ router.put("/comment/:id", async (req, res) => {
     const post = await Post.findById(req.params.id);
 
     if (!post.comments.includes(req.body.user)) {
-      await post.updateOne({ $push: { comments: comment } });
+      await post
+        .updateOne({
+          $push: {
+            comments: comment,
+          },
+        })
+        .populate("comments.user", [
+          "profilePicture",
+          "username",
+          "Verified",
+          "isAdmin",
+        ]);
 
       res.status(200).json("The post has been commented");
 
