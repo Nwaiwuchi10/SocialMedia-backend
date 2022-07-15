@@ -170,14 +170,9 @@ router.put("/comment/:id", async (req, res) => {
             comments: comment,
           },
         })
-        .populate("comments.user", [
-          "profilePicture",
-          "username",
-          "Verified",
-          "isAdmin",
-        ]);
+        .populate("comments.user", "_id username");
 
-      res.status(200).json("The post has been commented");
+      res.status(200).json("The post has been commented Sucessfully");
 
       res.status(200).json(savedcomments);
     }
@@ -185,6 +180,23 @@ router.put("/comment/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+////get my post
+router.get("/mypost", async (req, res) => {
+  try {
+    const user = user.req.body;
+
+    // const user = await User.findOne({ user: req.params._id });
+    const post = await Post.find({ user: req.user._id }).populate(
+      "user",
+      "_id username"
+    );
+    res.status(200).json(post);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 //get a post
 
 router.get("/:id", async (req, res) => {
